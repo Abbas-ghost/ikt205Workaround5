@@ -1,0 +1,36 @@
+﻿services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:8080"
+    depends_on:
+      - postgres
+
+  postgres:
+    image: postgres:17
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Password1.
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+        
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    container_name: caddy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./dataCaddy/data:/data
+      - ./dataCaddy/config:/config
+      - ./dataCaddy/Caddyfile:/etc/caddy/Caddyfile
+
+volumes:
+  pgdata:
